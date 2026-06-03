@@ -77,15 +77,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Bloom — Gentle support for autistic kids and families" },
+      { title: "Autism Rise — Gentle support for autistic kids and families" },
       {
         name: "description",
         content:
           "Bloom is a calm, child-friendly companion app with sensory tools, daily routines, rewards, progress tracking, and AI for personal journey and communication practice.",
       },
-      { property: "og:title", content: "Bloom — Gentle support for autistic kids and families" },
+      { property: "og:title", content: "Autism Rise — Gentle support for autistic kids and families" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Autism Rise — Gentle support for autistic kids and families" },
+      { name: "description", content: "Journey Buddy is an autism aid app designed to support daily living and skill development." },
+      { property: "og:description", content: "Journey Buddy is an autism aid app designed to support daily living and skill development." },
+      { name: "twitter:description", content: "Journey Buddy is an autism aid app designed to support daily living and skill development." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c17916dd-70aa-4edc-a219-ef44798f8355/id-preview-5bc66ee0--a871d722-03b0-4c86-9827-542ed171d777.lovable.app-1780498685334.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/c17916dd-70aa-4edc-a219-ef44798f8355/id-preview-5bc66ee0--a871d722-03b0-4c86-9827-542ed171d777.lovable.app-1780498685334.png" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
