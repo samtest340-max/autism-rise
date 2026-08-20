@@ -112,13 +112,19 @@ export function AiChat({
 
   const active = useMemo(() => threads.find((t) => t.id === activeId) ?? null, [threads, activeId]);
 
-  const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat", body: { assistant } }), [assistant]);
+  const { readingLevel } = useTheme();
+
+  const transport = useMemo(
+    () => new DefaultChatTransport({ api: "/api/chat", body: { assistant, readingLevel } }),
+    [assistant, readingLevel],
+  );
 
   const { messages, sendMessage, status, setMessages } = useChat({
     id: active?.id ?? "empty",
     messages: active?.messages ?? [],
     transport,
   });
+
 
   // Persist messages back into the active thread when they change.
   useEffect(() => {
