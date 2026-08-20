@@ -1,4 +1,5 @@
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { generateLocalResponse, localResponseToStream } from "@/lib/local-chat";
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 
@@ -50,19 +51,33 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
-        const gateway = createLovableAiGatewayProvider(key);
-        const model = gateway("google/gemini-3-flash-preview");
+        if (key) {
+          const gateway = createLovableAiGatewayProvider(key);
+          const model = gateway("google/gemini-3-flash-preview");
 
-        const result = streamText({
-          model,
-          system: SYSTEM_PROMPTS[assistant] ?? SYSTEM_PROMPTS.journey,
-          messages: await convertToModelMessages(messages as UIMessage[]),
-        });
+          const result = streamText({
+            model,
+            system: SYSTEM_PROMPTS[assistant] ?? SYSTEM_PROMPTS.journey,
+            messages: await convertToModelMessages(messages as UIMessage[]),
+          });
 
-        return result.toUIMessageStreamResponse({
-          originalMessages: messages as UIMessage[],
+          return result.toUIMessageStreamResponse({
+            originalMessages: messages as UIMessage[],
+          });
+        }
+
+        const response = generateLocalResponse(messages as UIMessage[], assistant);
+        const stream = localResponseToStream(response);
+
+        return new Response(stream, {
+          status: 200,
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            Connection: "keep-alive",
+            "X-Local-Chat": "true",
+          },
         });
       },
     },

@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Sparkles, Calendar, Trophy, TrendingUp, MessageCircleHeart, Hand, Settings } from "lucide-react";
+import { Hop as Home, Sparkles, Calendar, Trophy, TrendingUp, MessageCircleHeart, Hand, Settings } from "lucide-react";
 import logo from "@/assets/bloom-logo.png";
 
 import {
