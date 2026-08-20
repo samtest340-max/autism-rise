@@ -28,6 +28,8 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/components/theme-provider";
+
 
 export type AssistantId = "journey" | "coach";
 
@@ -191,11 +193,18 @@ export function AiChat({
 
   const sendText = useCallback(
     (text: string) => {
-      if (!text.trim()) return;
-      void sendMessage({ text });
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      if (isSensitive(trimmed)) {
+        setSafetyNote(true);
+        return;
+      }
+      setSafetyNote(false);
+      void sendMessage({ text: trimmed });
     },
     [sendMessage],
   );
+
 
   useEffect(() => {
     onReady?.(sendText);
