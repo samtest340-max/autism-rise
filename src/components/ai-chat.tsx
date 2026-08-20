@@ -33,6 +33,25 @@ import { useTheme } from "@/components/theme-provider";
 
 export type AssistantId = "journey" | "coach";
 
+/** Client-side guard: topics we never forward to the model. */
+const SENSITIVE_PATTERNS = [
+  /\bkill\b/i,
+  /\bsuicid/i,
+  /\bself[- ]?harm\b/i,
+  /\bcut(ting)? myself\b/i,
+  /\bhurt (myself|me)\b/i,
+  /\bwant to die\b/i,
+  /\bgun|knife|weapon\b/i,
+  /\bdrugs?\b|\bcocaine|\bheroin|\bvap(e|ing)\b/i,
+  /\bsex(ual)?\b|\bporn\b/i,
+  /\babuse(d)?\b|\btouch(ed)? me\b/i,
+];
+
+function isSensitive(text: string) {
+  return SENSITIVE_PATTERNS.some((re) => re.test(text));
+}
+
+
 type Thread = {
   id: string;
   title: string;
