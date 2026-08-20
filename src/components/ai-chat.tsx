@@ -28,8 +28,29 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/components/theme-provider";
+
 
 export type AssistantId = "journey" | "coach";
+
+/** Client-side guard: topics we never forward to the model. */
+const SENSITIVE_PATTERNS = [
+  /\bkill\b/i,
+  /\bsuicid/i,
+  /\bself[- ]?harm\b/i,
+  /\bcut(ting)? myself\b/i,
+  /\bhurt (myself|me)\b/i,
+  /\bwant to die\b/i,
+  /\bgun|knife|weapon\b/i,
+  /\bdrugs?\b|\bcocaine|\bheroin|\bvap(e|ing)\b/i,
+  /\bsex(ual)?\b|\bporn\b/i,
+  /\babuse(d)?\b|\btouch(ed)? me\b/i,
+];
+
+function isSensitive(text: string) {
+  return SENSITIVE_PATTERNS.some((re) => re.test(text));
+}
+
 
 type Thread = {
   id: string;
@@ -92,6 +113,8 @@ export function AiChat({
   const initialized = useRef(false);
   const [threads, setThreadsState] = useState<Thread[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [safetyNote, setSafetyNote] = useState(false);
+
 
   // Bootstrap idempotently on mount.
   useEffect(() => {
@@ -112,13 +135,19 @@ export function AiChat({
 
   const active = useMemo(() => threads.find((t) => t.id === activeId) ?? null, [threads, activeId]);
 
-  const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat", body: { assistant } }), [assistant]);
+  const { readingLevel } = useTheme();
+
+  const transport = useMemo(
+    () => new DefaultChatTransport({ api: "/api/chat", body: { assistant, readingLevel } }),
+    [assistant, readingLevel],
+  );
 
   const { messages, sendMessage, status, setMessages } = useChat({
     id: active?.id ?? "empty",
     messages: active?.messages ?? [],
     transport,
   });
+
 
   // Persist messages back into the active thread when they change.
   useEffect(() => {
@@ -185,11 +214,18 @@ export function AiChat({
 
   const sendText = useCallback(
     (text: string) => {
-      if (!text.trim()) return;
-      void sendMessage({ text });
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      if (isSensitive(trimmed)) {
+        setSafetyNote(true);
+        return;
+      }
+      setSafetyNote(false);
+      void sendMessage({ text: trimmed });
     },
     [sendMessage],
   );
+
 
   useEffect(() => {
     onReady?.(sendText);
@@ -198,7 +234,7 @@ export function AiChat({
   const isLoading = status === "submitted" || status === "streaming";
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] w-full">
+    <div className="flex h-[calc(100dvh-4rem)] w-full">
       {/* Thread list */}
       <aside className="hidden w-64 flex-col border-r border-border/60 bg-sidebar/40 md:flex">
         <div className="flex items-center justify-between px-3 py-3">
@@ -277,11 +313,27 @@ export function AiChat({
           <ConversationScrollButton />
         </Conversation>
 
+        {safetyNote && (
+          <div
+            role="alert"
+            className="mx-3 mb-2 rounded-2xl border-2 border-warm/60 bg-warm/25 p-4 text-base"
+          >
+            <p className="font-semibold">💛 I'm really glad you told me.</p>
+            <p className="mt-1">
+              That one is too big for me. Please tell a grown-up you trust right now — a parent, carer, or teacher.
+            </p>
+            <Button className="mt-3" size="sm" variant="outline" onClick={() => setSafetyNote(false)}>
+              Okay
+            </Button>
+          </div>
+        )}
+
         {interactivePanel && (
           <div className="border-t border-border/60 bg-muted/30 p-3">
             {interactivePanel}
           </div>
         )}
+
         <div className="border-t border-border/60 bg-background p-3">
           <ChatComposer
             disabled={isLoading}

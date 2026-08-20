@@ -1,149 +1,131 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Sparkles, Calendar, Trophy, MessageCircleHeart, Hand, TrendingUp, Sun } from "lucide-react";
+import { useWords } from "@/components/theme-provider";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Today — Bloom" },
-      { name: "description", content: "Your gentle dashboard: today's routine, sensory tools, rewards, and AI companions." },
+      {
+        name: "description",
+        content: "Big, easy buttons for sensory tools, your routine, rewards, progress, and two friendly AI helpers.",
+      },
       { property: "og:title", content: "Today — Bloom" },
+      {
+        property: "og:description",
+        content: "Big, easy buttons for sensory tools, your routine, rewards, progress, and two friendly AI helpers.",
+      },
     ],
   }),
   component: Index,
 });
 
-const routine = [
-  { time: "8:00", label: "Wake up & stretch", done: true },
-  { time: "8:30", label: "Breakfast", done: true },
-  { time: "9:00", label: "School", done: false, current: true },
-  { time: "15:00", label: "Quiet time", done: false },
-  { time: "18:00", label: "Dinner with family", done: false },
+type Tile = {
+  to: string;
+  icon: React.ComponentType<{ className?: string }>;
+  emoji: string;
+  title: string;
+  simple: string;
+  standard: string;
+  tone: string;
+};
+
+const TILES: Tile[] = [
+  {
+    to: "/sensory",
+    icon: Sparkles,
+    emoji: "🫧",
+    title: "Calm Down",
+    simple: "Breathe. Soft sounds. Pop bubbles.",
+    standard: "Breathing, calming sounds, and fidget tools.",
+    tone: "bg-primary/15 hover:bg-primary/25",
+  },
+  {
+    to: "/routine",
+    icon: Calendar,
+    emoji: "🗓️",
+    title: "My Day",
+    simple: "See what happens next.",
+    standard: "Your visual schedule for today.",
+    tone: "bg-secondary/25 hover:bg-secondary/40",
+  },
+  {
+    to: "/coach",
+    icon: Hand,
+    emoji: "🙌",
+    title: "Let's Talk",
+    simple: "Words, signs, and picture boards.",
+    standard: "Practice talking, ASL signs, and AAC boards.",
+    tone: "bg-accent/25 hover:bg-accent/40",
+  },
+  {
+    to: "/journey",
+    icon: MessageCircleHeart,
+    emoji: "💜",
+    title: "My Buddy",
+    simple: "Chat about your day.",
+    standard: "Bloom reflects on how far you've come.",
+    tone: "bg-warm/30 hover:bg-warm/45",
+  },
+  {
+    to: "/rewards",
+    icon: Trophy,
+    emoji: "⭐",
+    title: "My Stars",
+    simple: "See the stars you won.",
+    standard: "Quests, stars, and rewards you've earned.",
+    tone: "bg-warm/25 hover:bg-warm/40",
+  },
+  {
+    to: "/progress",
+    icon: TrendingUp,
+    emoji: "📈",
+    title: "My Wins",
+    simple: "Look how far you came.",
+    standard: "Progress for you and a parent view.",
+    tone: "bg-success/15 hover:bg-success/25",
+  },
 ];
 
 function Index() {
+  const w = useWords();
+
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 p-6">
-      {/* Greeting */}
-      <section className="rounded-3xl bg-gradient-to-br from-primary/20 via-secondary/30 to-accent/20 p-8">
-        <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Sun className="h-4 w-4" /> Good morning
-        </div>
-        <h1 className="mt-1 text-3xl font-semibold">Hi friend — let's have a gentle day.</h1>
-        <p className="mt-2 max-w-xl text-muted-foreground">
-          You've kept your routine going for <span className="font-medium text-foreground">5 days in a row</span>.
-          That's something to be proud of.
+    <div className="mx-auto w-full max-w-5xl space-y-8 p-4 sm:p-6">
+      <section className="rounded-3xl bg-gradient-to-br from-primary/20 via-secondary/30 to-accent/20 p-6 sm:p-8">
+        <p className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Sun className="h-4 w-4" aria-hidden /> {w("Good morning", "Good morning")}
         </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Button asChild>
-            <Link to="/sensory">Open sensory tools</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/journey">Talk to Bloom</Link>
-          </Button>
-        </div>
+        <h1 className="mt-2 text-3xl font-bold sm:text-4xl">{w("Hi friend 👋", "Hi friend — let's have a gentle day.")}</h1>
+        <p className="mt-2 max-w-xl text-base text-foreground/80 sm:text-lg">
+          {w("You did your routine 5 days in a row. That is great.", "You've kept your routine going 5 days in a row — that's something to be proud of.")}
+        </p>
       </section>
 
-      {/* Today's routine */}
-      <section className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Today's routine</CardTitle>
-              <CardDescription>One small step at a time.</CardDescription>
-            </div>
-            <Button asChild size="sm" variant="ghost">
-              <Link to="/routine">Open</Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <ol className="space-y-2">
-              {routine.map((step) => (
-                <li
-                  key={step.time}
-                  className={`flex items-center gap-3 rounded-2xl border border-border/60 px-4 py-3 ${
-                    step.current ? "bg-primary/10 ring-1 ring-primary/40" : ""
-                  }`}
-                >
-                  <span className="w-14 text-xs font-medium tabular-nums text-muted-foreground">{step.time}</span>
-                  <span className={`flex-1 ${step.done ? "text-muted-foreground line-through" : ""}`}>{step.label}</span>
-                  {step.done ? (
-                    <span className="text-xs font-medium text-success">Done</span>
-                  ) : step.current ? (
-                    <span className="text-xs font-medium text-primary">Now</span>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">Soon</span>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>This week</CardTitle>
-            <CardDescription>Calm, kind progress.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Stat label="Routine completion" value={72} suffix="%" />
-            <Stat label="Sensory check-ins" value={5} suffix=" / 7" raw />
-            <Stat label="Reward stars" value={18} suffix=" ⭐" raw />
-          </CardContent>
-        </Card>
-      </section>
-
-      {/* Quick links */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <QuickLink to="/sensory" icon={Sparkles} title="Sensory Tools" desc="Breathing, calm sounds, fidgets." />
-        <QuickLink to="/routine" icon={Calendar} title="My Routine" desc="Visual schedule for the day." />
-        <QuickLink to="/rewards" icon={Trophy} title="Rewards" desc="Collect stars for routines & wins." />
-        <QuickLink to="/progress" icon={TrendingUp} title="Progress" desc="A view for you and a parent view." />
-        <QuickLink to="/journey" icon={MessageCircleHeart} title="My Journey" desc="Bloom reflects on how far you've come." />
-        <QuickLink to="/coach" icon={Hand} title="Communication Coach" desc="Talking, ASL, and AAC practice." />
+      <section aria-labelledby="pick-heading">
+        <h2 id="pick-heading" className="mb-4 text-xl font-semibold">
+          {w("What do you want to do?", "What would you like to do?")}
+        </h2>
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {TILES.map((tile) => (
+            <li key={tile.to}>
+              <Link
+                to={tile.to}
+                className={`flex min-h-44 flex-col items-center justify-center gap-2 rounded-3xl border-2 border-border/50 p-6 text-center transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/50 active:scale-95 ${tile.tone}`}
+              >
+                <span className="text-5xl" aria-hidden>
+                  {tile.emoji}
+                </span>
+                <span className="flex items-center gap-2 text-xl font-bold">
+                  <tile.icon className="h-5 w-5" aria-hidden />
+                  {tile.title}
+                </span>
+                <span className="text-sm text-foreground/70">{w(tile.simple, tile.standard)}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
-  );
-}
-
-function Stat({ label, value, suffix, raw }: { label: string; value: number; suffix?: string; raw?: boolean }) {
-  return (
-    <div>
-      <div className="flex items-baseline justify-between text-sm">
-        <span className="text-muted-foreground">{label}</span>
-        <span className="font-medium">
-          {value}
-          {suffix}
-        </span>
-      </div>
-      {!raw && <Progress value={value} className="mt-1.5 h-2" />}
-    </div>
-  );
-}
-
-function QuickLink({
-  to,
-  icon: Icon,
-  title,
-  desc,
-}: {
-  to: string;
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <Link
-      to={to}
-      className="group rounded-2xl border border-border/60 bg-card p-5 transition-all hover:-translate-y-0.5 hover:shadow-md"
-    >
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary transition-colors group-hover:bg-primary/25">
-        <Icon className="h-5 w-5" />
-      </div>
-      <h3 className="mt-3 text-base font-semibold">{title}</h3>
-      <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
-    </Link>
   );
 }
