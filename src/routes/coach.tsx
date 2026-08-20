@@ -66,7 +66,8 @@ const MODES: {
 
 function Coach() {
   const [mode, setMode] = useState<Mode>("talking");
-  const [showTools, setShowTools] = useState(false);
+  const [showTools, setShowTools] = useState(true);
+
   const sendRef = useRef<((text: string) => void) | null>(null);
   const active = MODES.find((m) => m.id === mode)!;
 

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/settings")({
 });
 
 function Settings() {
-  const { palette, setPalette } = useTheme();
+  const { palette, setPalette, readingLevel, setReadingLevel } = useTheme();
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6 p-6">
@@ -23,6 +23,35 @@ function Settings() {
         <h1 className="text-2xl font-semibold">Settings</h1>
         <p className="text-muted-foreground">Make Bloom feel like yours.</p>
       </header>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Words &amp; reading</CardTitle>
+          <CardDescription>Choose how simple you want the words to be, in the app and in chat.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-2">
+          {([
+            { id: "simple", label: "Simple words", desc: "Short sentences. One idea at a time." },
+            { id: "standard", label: "Standard words", desc: "Normal sentences with a bit more detail." },
+          ] as const).map((opt) => {
+            const active = opt.id === readingLevel;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => setReadingLevel(opt.id)}
+                aria-pressed={active}
+                className={`min-h-24 rounded-2xl border-2 p-4 text-left transition-all ${
+                  active ? "border-primary ring-2 ring-primary/30" : "border-border/60 hover:shadow-md"
+                }`}
+              >
+                <p className="text-base font-semibold">{opt.label}</p>
+                <p className="text-sm text-muted-foreground">{opt.desc}</p>
+              </button>
+            );
+          })}
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader>
