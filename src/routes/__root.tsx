@@ -125,9 +125,9 @@ function RootComponent() {
           <div className="flex min-h-dvh w-full bg-background">
             <AppSidebar />
             <div className="flex flex-1 flex-col">
-              <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border/60 bg-background/80 px-4 backdrop-blur">
+              <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/60 bg-background/80 px-4 backdrop-blur">
                 <SidebarTrigger />
-                <span className="text-sm text-muted-foreground">A safe space, one tiny step at a time.</span>
+                <span className="text-sm text-muted-foreground" role="note">A safe space, one tiny step at a time.</span>
               </header>
               <main className="flex-1">
                 <Outlet />

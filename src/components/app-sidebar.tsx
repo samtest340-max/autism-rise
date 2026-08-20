@@ -36,15 +36,15 @@ export function AppSidebar() {
 
   const renderGroup = (label: string, items: typeof dailyItems) => (
     <SidebarGroup>
-      <SidebarGroupLabel>{label}</SidebarGroupLabel>
+      {label && <SidebarGroupLabel className="text-xs font-semibold uppercase tracking-wide">{label}</SidebarGroupLabel>}
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title}>
-                <Link to={item.url} className="flex items-center gap-2">
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.title}</span>
+              <SidebarMenuButton asChild isActive={isActive(item.url)} tooltip={item.title} size="lg">
+                <Link to={item.url} className="flex items-center gap-3">
+                  <item.icon className="h-5 w-5 shrink-0" />
+                  <span className="text-sm font-medium">{item.title}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -57,10 +57,10 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-2">
-          <img src={logo} alt="Bloom" width={32} height={32} className="rounded-md" />
+        <div className="flex items-center gap-2.5 px-2 py-3">
+          <img src={logo} alt="Bloom logo" width={36} height={36} className="rounded-lg" />
           <div className="flex flex-col leading-tight">
-            <span className="text-base font-semibold">Bloom</span>
+            <span className="text-base font-bold">Bloom</span>
             <span className="text-xs text-muted-foreground">Your gentle companion</span>
           </div>
         </div>

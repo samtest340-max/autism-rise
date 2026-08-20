@@ -11,6 +11,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { Plus, Trash2 } from "lucide-react";
+import type { ReactNode } from "react";
 
 import {
   Conversation,
@@ -75,6 +76,8 @@ export function AiChat({
   emptyHint,
   starterPrompts = [],
   accentClass = "from-primary/15 to-accent/15",
+  interactivePanel,
+  onReady,
 }: {
   assistant: AssistantId;
   title: string;
@@ -83,6 +86,8 @@ export function AiChat({
   emptyHint: string;
   starterPrompts?: string[];
   accentClass?: string;
+  interactivePanel?: ReactNode;
+  onReady?: (send: (text: string) => void) => void;
 }) {
   const initialized = useRef(false);
   const [threads, setThreadsState] = useState<Thread[]>([]);
@@ -186,6 +191,10 @@ export function AiChat({
     [sendMessage],
   );
 
+  useEffect(() => {
+    onReady?.(sendText);
+  }, [onReady, sendText]);
+
   const isLoading = status === "submitted" || status === "streaming";
 
   return (
@@ -268,6 +277,11 @@ export function AiChat({
           <ConversationScrollButton />
         </Conversation>
 
+        {interactivePanel && (
+          <div className="border-t border-border/60 bg-muted/30 p-3">
+            {interactivePanel}
+          </div>
+        )}
         <div className="border-t border-border/60 bg-background p-3">
           <ChatComposer
             disabled={isLoading}
