@@ -94,6 +94,8 @@ export function AiChat({
   const initialized = useRef(false);
   const [threads, setThreadsState] = useState<Thread[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [safetyNote, setSafetyNote] = useState(false);
+
 
   // Bootstrap idempotently on mount.
   useEffect(() => {
@@ -213,7 +215,7 @@ export function AiChat({
   const isLoading = status === "submitted" || status === "streaming";
 
   return (
-    <div className="flex h-[calc(100dvh-3.5rem)] w-full">
+    <div className="flex h-[calc(100dvh-4rem)] w-full">
       {/* Thread list */}
       <aside className="hidden w-64 flex-col border-r border-border/60 bg-sidebar/40 md:flex">
         <div className="flex items-center justify-between px-3 py-3">
@@ -292,11 +294,27 @@ export function AiChat({
           <ConversationScrollButton />
         </Conversation>
 
+        {safetyNote && (
+          <div
+            role="alert"
+            className="mx-3 mb-2 rounded-2xl border-2 border-warm/60 bg-warm/25 p-4 text-base"
+          >
+            <p className="font-semibold">💛 I'm really glad you told me.</p>
+            <p className="mt-1">
+              That one is too big for me. Please tell a grown-up you trust right now — a parent, carer, or teacher.
+            </p>
+            <Button className="mt-3" size="sm" variant="outline" onClick={() => setSafetyNote(false)}>
+              Okay
+            </Button>
+          </div>
+        )}
+
         {interactivePanel && (
           <div className="border-t border-border/60 bg-muted/30 p-3">
             {interactivePanel}
           </div>
         )}
+
         <div className="border-t border-border/60 bg-background p-3">
           <ChatComposer
             disabled={isLoading}
